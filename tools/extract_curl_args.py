@@ -229,7 +229,7 @@ def split(aliases):
         if len(alias["letter"]) == 1:
             alias_name = alias.get("name", alias["lname"])
             if alias["letter"] == "N":  # -N is short for --no-buffer
-                alias_name = "no-" + alias_name
+                alias_name = f"no-{alias_name}"
             if (
                 alias["letter"] in short_args
                 and short_args[alias["letter"]] != alias_name
@@ -279,9 +279,7 @@ def parse_tag(tag):
             raise ValueError(f"two extras? {tag}")
         extra = patch
         patch = "0"
-    if extra:  # filter pre-releases
-        return None
-    return int(major), int(minor), int(patch)
+    return None if extra else (int(major), int(minor), int(patch))
 
 
 def curl_tags(git_dir=CURL_REPO):
@@ -436,7 +434,7 @@ if __name__ == "__main__":
                 if start in line:
                     break
             else:
-                raise ValueError(f"{'// ' + start!r} not in {OUTPUT_FILE}")
+                raise ValueError(f"{f'// {start}'!r} not in {OUTPUT_FILE}")
 
             new_lines += [l + "\n" for l in adding_lines]
             for line in f:
@@ -444,7 +442,7 @@ if __name__ == "__main__":
                     new_lines.append(line)
                     break
             else:
-                raise ValueError(f"{'// ' + end!r} not in {OUTPUT_FILE}")
+                raise ValueError(f"{f'// {end}'!r} not in {OUTPUT_FILE}")
 
         add_between(
             f, new_lines, js_params_lines, JS_PARAMS_START, JS_PARAMS_END
